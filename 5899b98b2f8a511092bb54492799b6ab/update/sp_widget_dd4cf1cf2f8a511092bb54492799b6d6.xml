@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[api.controller=function($scope) {
+  /* widget controller */
+  
+	
+	var c = this;
+	//the below is when the client just loaded -- first time
+	console.log('client loaded');
+	
+	
+	//the below is after the client started -- and user cicked on some buttons
+	$scope.showCaller = function(inputval){
+		
+		c.data.answer = inputval;  //send html value to server
+		console.log('showCaller(): Caller is =  ' + inputval );
+		
+		c.server.update();
+	}
+};]]></client_script>
+        <controller_as>c</controller_as>
+        <css>td {
+    padding : 10px;
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>true</has_preview>
+        <id>sp_cls_1</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>sp_cls_1</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	
+	data.userName = gs.getUserDisplayName();
+	data.table = {
+		 "list" : []
+	};
+	
+	if (input) {
+		console.log('\n Thanks for your answer \n')   
+		console.log('input updated on the server:  ' + input.answer);
+	}
+	
+	data.answer = ""; // starting value is nothing
+	
+	var IncGR = new GlideRecord('incident');
+	IncGR.addQuery('category','software');
+	IncGR.query();
+	
+	while (IncGR.next())
+		{
+			var obj = {};
+			obj.number = IncGR.getValue('number');
+			obj.caller = IncGR.getDisplayValue('caller_id');
+			obj.shortDesc = IncGR.getValue('short_description');
+			obj.priority =  IncGR.getValue('priority');
+			//obj.category = IncGR.getValue('category');
+			
+			data.table.list.push(obj);
+				
+		}
+
+		gs.info(JSON.stringify(data.table.list, null, 4));
+	
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-09-24 18:44:31</sys_created_on>
+        <sys_id>dd4cf1cf2f8a511092bb54492799b6d6</sys_id>
+        <sys_mod_count>35</sys_mod_count>
+        <sys_name>sp_cls_1</sys_name>
+        <sys_package display_value="Home_Lessons" source="x_876150_home_less">5899b98b2f8a511092bb54492799b6ab</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Home_Lessons">5899b98b2f8a511092bb54492799b6ab</sys_scope>
+        <sys_update_name>sp_widget_dd4cf1cf2f8a511092bb54492799b6d6</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2022-09-24 23:08:53</sys_updated_on>
+        <template><![CDATA[<div>
+  Hello, {{ c.data.userName }}
+  <br> 
+  Welcome to the World of Widgets !!
+
+  <table  class = "table-striped">
+    <!--  if you want any header rows to your info -->
+    <!-- just add the th tab -->
+    <th> 
+       Number
+    </th>
+    <th>
+    	Short Description
+    </th>
+    <th>
+    	Priority
+    </th>
+    
+        
+    <tr ng-repeat = "row in c.data.table.list">
+
+      <td>   {{row.number}}    </td>
+
+      <td>   {{row.shortDesc}} </td>     
+
+      <td>   {{row.priority}}  </td>
+              
+      <td>  
+      	<button class = "btn btn-success" name = "callerButton" ng-click="showCaller(row.caller)">
+          Caller
+        </button>
+      </td>
+    </tr>
+  </table>
+
+  <!--   commenting in HTML
+  <pre>
+  	{{c.data.table | json}}
+  </pre>
+-->
+  
+</div>]]></template>
+    </sp_widget>
+</record_update>
